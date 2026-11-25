@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>스마트미러 관리</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header><h1>스마트미러 관리</h1><a href="/">미러 화면 보기</a></header>
+
+  <section>
+    <h2>옷 등록</h2>
+    <p class="hint">단색 바닥 위에 옷을 펼쳐서 찍으면 배경이 깨끗하게 지워져요. 투명 배경 PNG도 가능해요.</p>
+    <form id="cloth-form">
+      <input name="name" placeholder="옷 이름 (예: 회색 맨투맨)" required maxlength="30">
+      <div class="two">
+        <select name="category">
+          <option value="top">상의</option><option value="bottom">하의</option><option value="outer">아우터</option>
+        </select>
+        <select name="color">
+          <option>검정</option><option>흰색</option><option>회색</option><option>네이비</option><option>베이지</option>
+          <option>갈색</option><option>빨강</option><option>파랑</option><option>초록</option><option>노랑</option><option>분홍</option>
+        </select>
+      </div>
+      <label>두께 <output id="warmth-out">3</output> / 5 <span class="hint">(1 반팔·얇음 ~ 5 패딩)</span>
+        <input type="range" name="warmth" min="1" max="5" value="3">
+      </label>
+      <label class="check"><input type="checkbox" name="waterproof"> 방수 / 발수 소재</label>
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">등록하기</button>
+      <p id="form-msg" class="hint"></p>
+    </form>
+  </section>
+
+  <section>
+    <h2>내 옷장 <span id="count" class="hint"></span></h2>
+    <div id="wardrobe" class="grid"></div>
+  </section>
+
+  <section>
+    <h2>할 일</h2>
+    <form id="todo-form" class="inline"><input name="text" placeholder="오늘 할 일" required maxlength="100"><button>추가</button></form>
+    <ul id="todos"></ul>
+  </section>
+
+  <section>
+    <h2>AI 비서</h2>
+    <div id="chat-log"></div>
+    <form id="chat-form" class="inline"><input name="message" placeholder="예) 오늘 소개팅인데 뭐 입을까?" required maxlength="500"><button>보내기</button></form>
+  </section>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>
