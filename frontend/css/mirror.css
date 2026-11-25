@@ -1,0 +1,93 @@
+/* 스마트미러 화면. 거울 뒤에 놓이는 디스플레이라서 '검정 = 투명'처럼 보인다.
+   → 배경은 순수 #000, 글자는 약간 따뜻한 흰색, 선은 헤어라인으로 최소화. */
+:root {
+  --fg: #efece4;
+  --dim: rgba(239, 236, 228, .55);
+  --line: rgba(239, 236, 228, .16);
+  --info: #a9cfe0;
+  --warn: #f2c14e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; background: #000; color: var(--fg); overflow: hidden;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+body { display: flex; flex-direction: column; transition: opacity .8s; }
+body.asleep > * { opacity: 0; }                 /* 자리 비움 → 완전한 거울 */
+body > * { transition: opacity .8s; }
+
+/* ── 알림 배너 ── */
+#alerts { display: flex; flex-direction: column; gap: .5vh; padding: 1.5vh 3vw 0; }
+.alert { display: flex; gap: 1ch; align-items: center; font-size: clamp(16px, 2.2vh, 28px);
+         padding: 1vh 1.5vw; border-left: 3px solid var(--info); background: rgba(255,255,255,.05); }
+.alert.warning { border-color: var(--warn); }
+
+/* ── 레이아웃: 가로 화면 ── */
+.grid {
+  flex: 1; min-height: 0; display: grid; gap: 3vh 3vw; padding: 3vh 3vw;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "clock stage weather" "agenda stage indoor";
+}
+#clock { grid-area: clock; } #weather { grid-area: weather; text-align: right; }
+#stage { grid-area: stage; } #agenda { grid-area: agenda; } #indoor { grid-area: indoor; text-align: right; align-self: end; }
+
+/* ── 레이아웃: 세로 화면 (거울은 보통 세로로 건다) ── */
+@media (orientation: portrait) {
+  .grid {
+    grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto;
+    grid-template-areas: "clock weather" "stage stage" "agenda indoor";
+  }
+}
+
+.widget { min-height: 0; }
+.muted { color: var(--dim); font-size: clamp(14px, 1.8vh, 22px); }
+
+/* ── 시계: 화면에서 가장 먼저 읽히는 요소 ── */
+#time { font-size: clamp(64px, 14vh, 200px); font-weight: 200; letter-spacing: -.03em; line-height: 1; }
+#date { margin-top: 1vh; font-size: clamp(16px, 2.6vh, 34px); color: var(--dim); }
+
+/* ── 날씨 ── */
+.w-main { display: flex; gap: 1.2vw; align-items: center; justify-content: flex-end; }
+.w-icon { font-size: clamp(36px, 7vh, 90px); }
+.w-temp { font-size: clamp(48px, 9vh, 120px); font-weight: 200; line-height: 1; }
+.w-sub { margin-top: .6vh; font-size: clamp(14px, 2vh, 26px); color: var(--dim); }
+.hours { display: flex; justify-content: flex-end; gap: 1.6vw; margin-top: 2vh; padding-top: 1.5vh; border-top: 1px solid var(--line); }
+.hour { display: grid; gap: .3vh; text-align: center; font-size: clamp(13px, 1.8vh, 22px); }
+.hour span:first-child { color: var(--dim); }
+.pop { color: var(--info); }
+
+/* ── 가운데: 시착 + 코디 ── */
+#stage { display: flex; flex-direction: column; gap: 2vh; align-items: center; min-height: 0; }
+#tryon { flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; }
+#tryon img { max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 4px; }
+#outfit { width: 100%; text-align: center; }
+#outfit h3 { font-weight: 400; font-size: clamp(16px, 2.4vh, 30px); margin-bottom: 1.5vh; }
+#outfit h3 small { color: var(--dim); margin-left: .8ch; font-size: .8em; }
+.items { display: flex; gap: 1.5vw; justify-content: center; align-items: flex-end; }
+.items figure { width: clamp(70px, 12vh, 160px); }
+.items img { width: 100%; height: clamp(70px, 12vh, 160px); object-fit: contain; }
+.items figcaption { margin-top: .6vh; font-size: clamp(12px, 1.6vh, 20px); color: var(--dim); }
+.reasons { list-style: none; margin-top: 1.5vh; font-size: clamp(13px, 1.9vh, 24px); color: var(--dim); }
+.dots { display: flex; gap: 8px; justify-content: center; margin-top: 1.5vh; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.dots i.on { background: var(--fg); }
+
+/* ── 일정 / 할 일 ── */
+#agenda h3, #indoor h3 { font-weight: 400; font-size: clamp(14px, 1.9vh, 24px); color: var(--dim); margin-bottom: 1.2vh; }
+.row { display: flex; gap: 1.2ch; padding: .7vh 0; border-bottom: 1px solid var(--line); font-size: clamp(15px, 2.2vh, 28px); }
+.row .when { color: var(--info); min-width: 5ch; }
+.row.done { color: var(--dim); text-decoration: line-through; }
+.agenda-gap { height: 2vh; }
+
+/* ── 실내 환경 ── */
+.in-big { font-size: clamp(28px, 5vh, 64px); font-weight: 200; }
+.in-sub { font-size: clamp(13px, 1.9vh, 24px); color: var(--dim); margin-top: .4vh; }
+
+/* ── 하단 브리핑 ── */
+#briefing { padding: 2vh 3vw 3vh; border-top: 1px solid var(--line); font-size: clamp(16px, 2.4vh, 32px);
+            line-height: 1.55; max-width: 80ch; margin: 0 auto; text-align: center; color: var(--fg); }
+
+#link-status { position: fixed; right: 8px; bottom: 8px; width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+#link-status.down { background: var(--warn); }
